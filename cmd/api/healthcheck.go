@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
@@ -13,20 +12,11 @@ func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Reques
 		"Version":     version,
 	}
 
-	// marshal the data struct into JSON
-	js, err := json.Marshal(data)
+	// call the writeJSON helper method to convert data to JSON
+	err := app.writeJSON(w, http.StatusOK, data, nil)
 	if err != nil {
-		// this uses the error logger to log the err from marshalling the json
+		// log the error
 		app.logger.Error(err.Error())
-		http.Error(w, "Error processing JSON marshalling", http.StatusInternalServerError)
-		return
+		http.Error(w, "The server encountered a problem and could not parse JSON request", http.StatusInternalServerError)
 	}
-
-	// a nicety to make this viewable in terminals
-	js = append(js, '\n')
-
-	// setting header to recognize and parse json
-	w.Header().Set("Content-Type", "application/json")
-
-	w.Write([]byte(js))
 }
