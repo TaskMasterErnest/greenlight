@@ -26,7 +26,7 @@ func (app *application) readIDParams(r *http.Request) (int64, error) {
 // it takes in the responseWriter, the status code to send, the data to encode, any HTTP headers and returns an error
 func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
 	// marshal the data
-	js, err := json.Marshal(data)
+	js, err := json.MarshalIndent(data, "", "    ") // 4 spaces for the indentation
 	if err != nil {
 		return err
 	}
