@@ -5,15 +5,17 @@ import (
 )
 
 func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Request) {
-	// stating the data in a map object type
-	data := map[string]string{
-		"Status":      "Available",
-		"Environment": app.config.env,
-		"Version":     version,
+	// enveloping the healthcheck response
+	env := envelope{
+		"Status": "Available",
+		"System_Info": map[string]string{
+			"Environment": app.config.env,
+			"Version":     version,
+		},
 	}
 
 	// call the writeJSON helper method to convert data to JSON
-	err := app.writeJSON(w, http.StatusOK, data, nil)
+	err := app.writeJSON(w, http.StatusOK, env, nil)
 	if err != nil {
 		// log the error
 		app.logger.Error(err.Error())

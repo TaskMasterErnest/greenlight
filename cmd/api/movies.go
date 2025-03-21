@@ -32,8 +32,8 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 		Version:   1,
 	}
 
-	// encode movie data and send as JSON response
-	err = app.writeJSON(w, http.StatusOK, movie, nil)
+	// envelope the movie in the envelope type
+	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
 	if err != nil {
 		app.logger.Error(err.Error())
 		http.Error(w, "The server encountered a problem and could not parse your movie request", http.StatusInternalServerError)

@@ -9,6 +9,9 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// create an envelope type
+type envelope map[string]any
+
 func (app *application) readIDParams(r *http.Request) (int64, error) {
 	// get the parameters from the context in the request URL
 	params := httprouter.ParamsFromContext(r.Context())
@@ -24,7 +27,8 @@ func (app *application) readIDParams(r *http.Request) (int64, error) {
 
 // a writeJSON helper to help with encoding data into JSON.
 // it takes in the responseWriter, the status code to send, the data to encode, any HTTP headers and returns an error
-func (app *application) writeJSON(w http.ResponseWriter, status int, data any, headers http.Header) error {
+// modify the date to be of type envelope
+func (app *application) writeJSON(w http.ResponseWriter, status int, data envelope, headers http.Header) error {
 	// marshal the data
 	js, err := json.MarshalIndent(data, "", "    ") // 4 spaces for the indentation
 	if err != nil {
