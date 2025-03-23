@@ -42,7 +42,7 @@ func (app *application) serverErrorResponse(w http.ResponseWriter, r *http.Reque
 }
 
 // a detailed notFoundResponse
-func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request, err error) {
+func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request) {
 
 	message := "The requested resource could not be found"
 
@@ -50,7 +50,7 @@ func (app *application) notFoundResponse(w http.ResponseWriter, r *http.Request,
 }
 
 // a detailed methodNotAllowedResponse error response
-func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request, err error) {
+func (app *application) methodNotAllowedResponse(w http.ResponseWriter, r *http.Request) {
 	message := fmt.Sprintf("The %s method is not supported for this resource", r.Method)
 
 	app.errorResponse(w, r, http.StatusMethodNotAllowed, message)
