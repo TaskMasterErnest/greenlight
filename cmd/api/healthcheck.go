@@ -19,6 +19,6 @@ func (app *application) healthCheckHandler(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		// log the error
 		app.logger.Error(err.Error())
-		http.Error(w, "The server encountered a problem and could not parse JSON request", http.StatusInternalServerError)
+		app.serverErrorResponse(w, r, err)
 	}
 }

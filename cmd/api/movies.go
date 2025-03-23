@@ -17,8 +17,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	// the ID is a integer and the params are strings, convert them to int
 	id, err := app.readIDParams(r)
 	if err != nil {
-		http.NotFound(w, r)
-		return
+		app.notFoundResponse(w, r, err)
 	}
 
 	// initialize a Movie struct instance
@@ -36,6 +35,6 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	err = app.writeJSON(w, http.StatusOK, envelope{"movie": movie}, nil)
 	if err != nil {
 		app.logger.Error(err.Error())
-		http.Error(w, "The server encountered a problem and could not parse your movie request", http.StatusInternalServerError)
+		app.serverErrorResponse(w, r, err)
 	}
 }
