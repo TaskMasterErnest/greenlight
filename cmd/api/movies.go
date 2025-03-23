@@ -17,7 +17,7 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 	// the ID is a integer and the params are strings, convert them to int
 	id, err := app.readIDParams(r)
 	if err != nil {
-		app.notFoundResponse(w, r, err)
+		app.notFoundResponse(w, r)
 	}
 
 	// initialize a Movie struct instance
