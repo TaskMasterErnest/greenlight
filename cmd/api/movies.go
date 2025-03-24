@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -8,10 +9,7 @@ import (
 	"github.com/TaskMasterErnest/greenlight/internal/data"
 )
 
-func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, "Create a new movie")
-}
-
+// showMovieHandler
 func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request) {
 	// get the ID params from the context
 	// the ID is a integer and the params are strings, convert them to int
@@ -37,4 +35,25 @@ func (app *application) showMovieHandler(w http.ResponseWriter, r *http.Request)
 		app.logger.Error(err.Error())
 		app.serverErrorResponse(w, r, err)
 	}
+}
+
+// createMovieHandler
+func (app *application) createMovieHandler(w http.ResponseWriter, r *http.Request) {
+	// create struct to hold movie data
+	var input struct {
+		Title   string   `json:"title"`
+		Year    int32    `json:"year"`
+		Runtime int32    `json:"runtime"`
+		Genres  []string `json:"genres"`
+	}
+
+	// initialize a json.Decoder instance to decode the data from client into the input struct
+	err := json.NewDecoder(r.Body).Decode(&input)
+	if err != nil {
+		app.errorResponse(w, r, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	// respond with the contents of the input struct
+	fmt.Fprintf(w, "%+v\n", input)
 }
