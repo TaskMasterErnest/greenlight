@@ -1,11 +1,14 @@
 # Use postgres/example user/password credentials
 # for greenlight database, credentials are:
 # user: greenlight
-# password: gr33n@Light
+# password: gr33n#Light -- encoded as gr33n%23Light
 # database: greenlight
 services:
   db:
     image: postgres:16.8-alpine3.21
+    network_mode: host
+    ports:
+      - 5432:5432
     container_name: postgres-db
     restart: always
     # set shared memory limit when using docker-compose
