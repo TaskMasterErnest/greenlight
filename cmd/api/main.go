@@ -12,6 +12,7 @@ import (
 
 	// import pq driver so it can register itself with the sql package
 	// alias to blank identifier to stop Go from complaining that it is not being used
+	"github.com/TaskMasterErnest/greenlight/internal/data"
 	_ "github.com/lib/pq"
 )
 
@@ -29,9 +30,11 @@ type config struct {
 	}
 }
 
+// add models field to hold new Models struct
 type application struct {
 	config config
 	logger *slog.Logger
+	models data.Models
 }
 
 func main() {
@@ -72,9 +75,11 @@ func main() {
 	logger.Info("database connection pool established")
 
 	// initialize an instance of the application struct
+	// initialize a Models struct with data.NewModels() func; pass it to connection pool as a param
 	app := &application{
 		config: cfg,
 		logger: logger,
+		models: data.NewModels(db),
 	}
 
 	server := &http.Server{
