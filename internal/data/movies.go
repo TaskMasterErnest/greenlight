@@ -116,7 +116,18 @@ func (m MovieModel) Get(id int64) (*Movie, error) {
 
 // update a specific movie record in the Movie table
 func (m MovieModel) Update(movie *Movie) error {
-	return nil
+	// add query to update the fields in the movie struct
+	query := `UPDATE movies
+			SET title = $1, year = $2, runtime = $3, genres = $4, version = version + 1
+			WHERE id = $5
+			RETURNING version`
+
+	// make a slice of args that we will pass into the executing SQL query
+	args := []any{movie.Title, movie.Year, movie.Runtime, pq.Array(movie.Genres), movie.ID}
+
+	// make the query with the QueryRow() method, passing in the slice of args as a variadic parameter
+	// scan the new version value into the movie struct
+	return m.DB.QueryRow(query, args...).Scan(&movie.Version)
 }
 
 // delete a specific record from the Movies table
