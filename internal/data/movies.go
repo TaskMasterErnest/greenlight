@@ -130,7 +130,35 @@ func (m MovieModel) Update(movie *Movie) error {
 	return m.DB.QueryRow(query, args...).Scan(&movie.Version)
 }
 
-// delete a specific record from the Movies table
+// delete a specific movie record from the Movie table
 func (m MovieModel) Delete(id int64) error {
+	// return an error if the movie ID is less than 1
+	if id < 1 {
+		return ErrRecordNotFound
+	}
+
+	// query to delete movie with specific ID
+	query := `DELETE FROM movies
+			WHERE id = $1`
+
+	// execute the SQL query using the Exec() method, pass in the id variable as the placeholder parameter
+	// the Exec() method returns an sql.Result object
+	result, err := m.DB.Exec(query, id)
+	if err != nil {
+		return err
+	}
+
+	// get the number of rows affected by the query by calling the RowsAffected() method on the sql.Result output
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	// if not rows were affected, then we know that the record was not in the table
+	if rowsAffected == 0 {
+		return ErrRecordNotFound
+	}
+
 	return nil
+
 }
