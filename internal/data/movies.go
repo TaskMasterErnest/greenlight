@@ -2,6 +2,7 @@ package data
 
 import (
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/TaskMasterErnest/greenlight/internal/validator"
@@ -70,7 +71,47 @@ func (m MovieModel) Insert(movie *Movie) error {
 
 // fetching a movie record from the Movie table
 func (m MovieModel) Get(id int64) (*Movie, error) {
-	return nil, nil
+	// per the PostgreSQL type we are using for the movie ID , we know that no ID will be less than 1
+	// we avoid making an unnecessary database call
+	if id < 1 {
+		return nil, ErrRecordNotFound
+	}
+
+	// define query for retrieving movie data
+	query := `
+			SELECT id, created_at, title, year, runtime, genres, version
+			FROM movies
+			WHERE id = $1`
+
+	// declare a struct to hold the data returned by the query
+	var movie Movie
+
+	// execute query with QueryRow() method, pass in ID value as placeholder param
+	// scan response data into fields of Movie struct
+	err := m.DB.QueryRow(query, id).Scan(
+		&movie.ID,
+		&movie.CreatedAt,
+		&movie.Title,
+		&movie.Year,
+		&movie.Runtime,
+		pq.Array(&movie.Genres),
+		&movie.Version,
+	)
+
+	// handle any errors.
+	// if Scan() returns an sql.ErrNoRows error, check and return our custom ErrRecordNotFound instead
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
+	// otherwise return a pointer to the movie struct
+	return &movie, nil
+
 }
 
 // update a specific movie record in the Movie table
